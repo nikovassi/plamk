@@ -18,7 +18,7 @@ import { localBusinessLd, organizationLd, useSeo, websiteLd } from '../lib/seo'
 export default function Home() {
   useSeo({
     title: `${site.brand} — фасади, метални конструкции, хартиени продукти и фолиа`,
-    description: 'Фасадни облицовки от Al Bond, HPL и керамика, метални конструкции, зимни градини и навеси. Търговия с хартиени продукти и полиетиленови фолиа.',
+    description: 'Фасадни облицовки от Al Bond, HPL и керамика, метални конструкции, зимни градини и навеси. Служба по трудова медицина. Търговия с хартиени продукти и полиетиленови фолиа.',
     path: '/',
     jsonLd: [organizationLd(), localBusinessLd(), websiteLd()],
   })
@@ -39,7 +39,7 @@ export default function Home() {
             Фасади и търговия
           </h1>
           <p className="mt-5 max-w-xl text-[1.1875rem] leading-snug text-white/85 anim-rise md:text-xl" style={{ ['--d' as string]: '260ms' }}>
-            Монтаж на фасадни облицовки и метални конструкции. Хартиени продукти и фолиа на едро и дребно.
+            Монтаж на фасадни облицовки и метални конструкции. Служба по трудова медицина. Хартиени продукти и фолиа на едро и дребно.
           </p>
           <div className="mt-8 flex flex-col gap-3 anim-rise sm:flex-row" style={{ ['--d' as string]: '360ms' }}>
             <ButtonLink to="/zapitvane?ot=hero" size="lg" icon="arrow" cta="hero">
@@ -50,7 +50,7 @@ export default function Home() {
             </ButtonLink>
           </div>
           <ul className="mt-10 hidden flex-wrap gap-2 anim-rise sm:flex" style={{ ['--d' as string]: '460ms' }} aria-label="Услуги">
-            {['Al Bond', 'HPL', 'Керамика', 'Метални конструкции', 'Хартиени продукти', 'Фолиа'].map((t) => (
+            {['Al Bond', 'HPL', 'Керамика', 'Метални конструкции', 'Трудова медицина', 'Хартиени продукти', 'Фолиа'].map((t) => (
               <li key={t} className="rounded-full border border-white/20 px-3.5 py-1.5 text-sm text-white/80 backdrop-blur-sm">{t}</li>
             ))}
           </ul>
@@ -93,6 +93,23 @@ export default function Home() {
             </li>
           ))}
         </ul>
+      </section>
+
+      {/* OCCUPATIONAL HEALTH */}
+      <section className="container-x pt-16 md:pt-24" aria-labelledby="stm-title">
+        <Link to="/trudova-medicina" className="group grid gap-6 overflow-hidden rounded-[28px] border border-line bg-surface p-6 md:grid-cols-[1.3fr_1fr] md:items-center md:p-10">
+          <div>
+            <p className="eyebrow mb-3">Отделна услуга</p>
+            <h2 id="stm-title" className="h-section">Служба по трудова медицина</h2>
+            <p className="mt-4 max-w-xl text-lg text-ink-2">Оценка на риска, задължителна документация по ЗЗБУТ и наблюдение на здравето на служителите — задължително за всеки работодател.</p>
+            <span className="mt-6 inline-flex items-center gap-2 font-semibold text-accent">Научи повече <Icon name="arrow" className="h-5 w-5 transition-transform group-hover:translate-x-1" /></span>
+          </div>
+          <ul className="grid grid-cols-2 gap-2 text-[0.9375rem]">
+            {['Оценка на риска', 'Документация', 'Здравно наблюдение', 'Консултации'].map((t) => (
+              <li key={t} className="flex items-center gap-2 rounded-2xl bg-surface-2 p-4"><Icon name="check" className="h-5 w-5 shrink-0 text-accent" />{t}</li>
+            ))}
+          </ul>
+        </Link>
       </section>
 
       {/* PRODUCTS */}

@@ -28,12 +28,13 @@ export const materialOptions = opts([
   { value: 'metal', label: 'Метална конструкция' },
   { value: 'paper', label: 'Хартиени продукти' },
   { value: 'film', label: 'Фолиа' },
+  { value: 'stm', label: 'Трудова медицина' },
   { value: 'combo', label: 'Комбинация' },
   { value: 'unsure', label: 'Не съм сигурен' },
 ] as const)
 
-/** Facade/metal wizard shows only construction options; products go through the quick request */
-export const PRODUCT_INTERESTS = ['paper', 'film'] as const
+/** Facade/metal wizard shows only construction options; products and СТМ go through the quick request */
+export const PRODUCT_INTERESTS = ['paper', 'film', 'stm'] as const
 export const constructionMaterialOptions = materialOptions.filter((o) => !(PRODUCT_INTERESTS as readonly string[]).includes(o.value))
 
 export const areaOptions = opts([

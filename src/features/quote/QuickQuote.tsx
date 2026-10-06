@@ -69,7 +69,7 @@ export function QuickQuote({ source, material, product }: { source: string; mate
         <TextField label="Телефон" name="phone" type="tel" inputMode="tel" autoComplete="tel" value={d.phone} onChange={(e) => set({ phone: e.target.value })} error={errors.phone} placeholder="0888 123 456" />
         <TextField label="Град" name="city" autoComplete="address-level2" value={d.city} onChange={(e) => set({ city: e.target.value })} error={errors.city} />
         <OptionGroup legend="Какво ви интересува?" name="material" columns={3} options={materialOptions} value={d.material} onChange={(v) => set({ material: v })} error={errors.material} />
-        <TextArea label="Кратко описание или количество" name="message" maxLength={MESSAGE_MAX} value={d.message} onChange={(e) => set({ message: e.target.value })} error={errors.message} placeholder="напр. фасада на къща, 120 m² — или: стреч фолио, 20 ролки" />
+        <TextArea label="Кратко описание или количество" name="message" maxLength={MESSAGE_MAX} value={d.message} onChange={(e) => set({ message: e.target.value })} error={errors.message} placeholder="напр. фасада на къща, 120 m² · стреч фолио, 20 ролки · СТМ за 12 служители" />
         <div>
           <p className="mb-2 text-[0.9375rem] font-semibold">Снимка <span className="font-normal text-ink-3">· по желание</span></p>
           <FileUpload files={files} onChange={setFiles} compact />

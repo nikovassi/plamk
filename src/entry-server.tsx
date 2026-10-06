@@ -11,7 +11,7 @@ import { productCategories } from './content/products'
 /** Routes to prerender. */
 export function routes() {
   return [
-    '/', '/proekti', '/uslugi', '/produkti', '/kontakti', '/zapitvane',
+    '/', '/proekti', '/uslugi', '/trudova-medicina', '/produkti', '/kontakti', '/zapitvane',
     '/poveritelnost', '/usloviya', '/biskvitki', '/admin',
     ...projects.map((p) => `/proekti/${p.slug}`),
     ...services.map((s) => `/uslugi/${s.slug}`),

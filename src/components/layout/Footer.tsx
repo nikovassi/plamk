@@ -14,7 +14,7 @@ export function Footer() {
       <div className="container-x grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr]">
         <div className="col-span-2 lg:col-span-1">
           <Logo />
-          <p className="mt-4 max-w-sm text-ink-2">Фасадни облицовки и метални конструкции. Търговия с хартиени продукти и фолиа.</p>
+          <p className="mt-4 max-w-sm text-ink-2">Фасадни облицовки и метални конструкции. Служба по трудова медицина. Търговия с хартиени продукти и фолиа.</p>
           <div className="mt-6">
             <ContactActions from="footer" />
           </div>
@@ -42,6 +42,7 @@ export function Footer() {
           </ul>
           <h2 className="eyebrow mb-3 mt-6">Още</h2>
           <ul>
+            <li><Link className={linkCls} to="/trudova-medicina">Служба по трудова медицина</Link></li>
             <li><Link className={linkCls} to="/proekti">Проекти</Link></li>
             <li><Link className={linkCls} to="/kontakti">Контакти</Link></li>
           </ul>

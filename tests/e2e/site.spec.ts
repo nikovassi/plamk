@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { expectNoBrokenImages, watchErrors } from './helpers'
 
-const ROUTES = ['./', 'proekti', 'uslugi', 'produkti', 'produkti/hartieni-produkti', 'produkti/folia', 'kontakti', 'zapitvane', 'poveritelnost', 'usloviya', 'biskvitki',
+const ROUTES = ['./', 'proekti', 'uslugi', 'trudova-medicina', 'produkti', 'produkti/hartieni-produkti', 'produkti/folia', 'kontakti', 'zapitvane', 'poveritelnost', 'usloviya', 'biskvitki',
   'proekti/zhilishtna-sgrada-keramichna-fasada', 'proekti/targovski-obekti-al-bond', 'uslugi/al-bond-montazh', 'uslugi/ventiliruemi-fasadi', 'uslugi/zimni-gradini', 'uslugi/industrialni-haleta', 'uslugi/metalni-vrati-i-ogradi']
 
 test('every route renders without console errors, broken images or horizontal scroll', async ({ page }) => {
@@ -32,6 +32,14 @@ test('SEO: title, description, canonical, structured data', async ({ page, reque
   expect(sitemap).toContain('/proekti/zhilishtna-sgrada-keramichna-fasada')
   expect(sitemap).not.toContain('laminam')
   expect(await (await request.get('robots.txt')).text()).toContain('Sitemap:')
+})
+
+test('СТМ page has FAQ structured data and expandable answers', async ({ page }) => {
+  await page.goto('trudova-medicina')
+  const types = await page.locator('script[type="application/ld+json"]').evaluateAll((els) => els.map((e) => JSON.parse(e.textContent!)['@type']))
+  expect(types).toEqual(expect.arrayContaining(['Service', 'FAQPage']))
+  await page.getByText('Как се формира цената?').click()
+  await expect(page.getByText(/Според броя на служителите/)).toBeVisible()
 })
 
 test('unknown URL → 404 status and helpful page (GitHub Pages behaviour)', async ({ page }) => {

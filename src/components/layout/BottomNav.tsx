@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from 'react-router'
 import { Icon, type IconName } from '../ui/Icon'
 import { track } from '../../lib/analytics'
+import { quoteHref } from './Header'
 
 const items: { to: string; label: string; icon: IconName; end?: boolean }[] = [
   { to: '/', label: 'Начало', icon: 'home', end: true },
@@ -37,7 +38,7 @@ export function BottomNav() {
           ))}
           <li>
             <NavLink
-              to="/zapitvane"
+              to={quoteHref(pathname)}
               onClick={() => track('cta_click', { cta: 'bottom-nav' })}
               className="mx-auto flex h-14 w-full flex-col items-center justify-center gap-0.5 rounded-2xl bg-accent text-[0.75rem] font-semibold text-accent-ink shadow-[0_8px_20px_-8px_var(--accent)] active:scale-95 transition-transform"
             >

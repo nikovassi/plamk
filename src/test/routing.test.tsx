@@ -12,6 +12,7 @@ describe('routing', () => {
     ['/proekti', /^Проекти$/],
     ['/uslugi', /^Услуги$/],
     ['/produkti', /^Продукти$/],
+    ['/trudova-medicina', /Служба по трудова медицина/],
     ['/kontakti', /Да поговорим/],
     ['/poveritelnost', /Политика за поверителност/],
     ['/nyama-takava', /Тази страница не съществува/],
@@ -87,6 +88,21 @@ describe('products', () => {
     renderAt('/zapitvane')
     await screen.findByText('Стъпка 1 от 7')
     expect(screen.queryByLabelText('Фолиа')).not.toBeInTheDocument()
+  })
+})
+
+describe('occupational health', () => {
+  it('CTAs open the quick request with the СТМ interest', async () => {
+    renderAt('/trudova-medicina')
+    const cta = within(await screen.findByRole('main')).getAllByRole('link', { name: /Поискай оферта/ })[0]
+    expect(cta.getAttribute('href')).toMatch(/rezhim=barzo&interes=stm/)
+    expect(screen.getAllByRole('link', { name: /Поискай оферта/ }).every((l) => /interes=stm/.test(l.getAttribute('href') ?? ''))).toBe(true)
+    expect(screen.getByRole('link', { name: /Безплатен одит/ }).getAttribute('href')).toContain(encodeURIComponent('Безплатен одит на документацията'))
+  })
+
+  it('the quick request offers „Трудова медицина“', async () => {
+    renderAt('/zapitvane?rezhim=barzo&interes=stm')
+    expect(await screen.findByRole('radio', { name: 'Трудова медицина' })).toBeChecked()
   })
 })
 

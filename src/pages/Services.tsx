@@ -1,7 +1,9 @@
+import { Link } from 'react-router'
 import { services } from '../content/services'
 import { ServiceCard } from '../components/cards/ServiceCard'
 import { PageHero } from '../components/sections/PageHero'
 import { CtaBand } from '../components/sections/CtaBand'
+import { Icon } from '../components/ui/Icon'
 import { Process } from '../components/sections/Process'
 import { breadcrumbLd, useSeo } from '../lib/seo'
 
@@ -29,6 +31,16 @@ export default function Services() {
         <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {metal.map((s, i) => <li key={s.slug}><ServiceCard s={s} index={i} /></li>)}
         </ul>
+      </section>
+      <section className="container-x mt-14" aria-labelledby="stm-link">
+        <Link to="/trudova-medicina" className="group flex items-center justify-between gap-4 rounded-[22px] border border-line bg-surface p-6 hover:border-ink-3">
+          <span>
+            <span className="eyebrow block">Отделна услуга</span>
+            <span id="stm-link" className="mt-1 block text-2xl font-semibold">Служба по трудова медицина</span>
+            <span className="mt-1 block text-ink-2">Оценка на риска, документация по ЗЗБУТ, здравно наблюдение на служителите.</span>
+          </span>
+          <Icon name="arrow" className="h-6 w-6 shrink-0 transition-transform group-hover:translate-x-1" />
+        </Link>
       </section>
       <Process />
       <CtaBand from="services" />

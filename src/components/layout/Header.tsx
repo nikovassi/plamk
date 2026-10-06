@@ -9,10 +9,19 @@ import { track } from '../../lib/analytics'
 
 export const mainNav = [
   { to: '/uslugi', label: 'Услуги' },
+  { to: '/trudova-medicina', label: 'Трудова медицина' },
   { to: '/produkti', label: 'Продукти' },
   { to: '/proekti', label: 'Проекти' },
   { to: '/kontakti', label: 'Контакти' },
 ]
+
+/** Quote target matching the section the visitor is in */
+export function quoteHref(pathname: string) {
+  if (pathname.startsWith('/trudova-medicina')) return '/zapitvane?rezhim=barzo&interes=stm&ot=header'
+  if (pathname.startsWith('/produkti/folia')) return '/zapitvane?rezhim=barzo&interes=film&ot=header'
+  if (pathname.startsWith('/produkti')) return '/zapitvane?rezhim=barzo&interes=paper&ot=header'
+  return '/zapitvane'
+}
 
 export function Header() {
   const { pathname } = useLocation()
@@ -70,7 +79,7 @@ export function Header() {
           )}
           {!inQuote && (
             <span className="ml-1 hidden lg:block">
-              <ButtonLink to="/zapitvane" size="sm" cta="header">
+              <ButtonLink to={quoteHref(pathname)} size="sm" cta="header">
                 Поискай оферта
               </ButtonLink>
             </span>

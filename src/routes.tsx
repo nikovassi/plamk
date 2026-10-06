@@ -15,6 +15,7 @@ const pages = {
   Services: () => import('./pages/Services'),
   ServiceDetail: () => import('./pages/ServiceDetail'),
   Products: () => import('./pages/Products'),
+  OccupationalHealth: () => import('./pages/OccupationalHealth'),
   ProductDetail: () => import('./pages/ProductDetail'),
   Contact: () => import('./pages/Contact'),
   Quote: () => import('./pages/Quote'),
@@ -30,7 +31,7 @@ export type PageName = keyof typeof pages
 export const pageModules: Record<PageName, string> = {
   Home: 'src/pages/Home.tsx', Projects: 'src/pages/Projects.tsx', ProjectDetail: 'src/pages/ProjectDetail.tsx',
   Services: 'src/pages/Services.tsx', ServiceDetail: 'src/pages/ServiceDetail.tsx',
-  Products: 'src/pages/Products.tsx', ProductDetail: 'src/pages/ProductDetail.tsx',
+  Products: 'src/pages/Products.tsx', ProductDetail: 'src/pages/ProductDetail.tsx', OccupationalHealth: 'src/pages/OccupationalHealth.tsx',
   Contact: 'src/pages/Contact.tsx', Quote: 'src/pages/Quote.tsx', Privacy: 'src/pages/Privacy.tsx', Terms: 'src/pages/Terms.tsx',
   Cookies: 'src/pages/Cookies.tsx', NotFound: 'src/pages/NotFound.tsx', Admin: 'src/features/admin/AdminApp.tsx',
 }
@@ -65,6 +66,7 @@ export const routeConfig: AppRoute[] = [
       { path: 'proekti/:slug', page: 'ProjectDetail', element: el('ProjectDetail') },
       { path: 'uslugi', page: 'Services', element: el('Services') },
       { path: 'uslugi/:slug', page: 'ServiceDetail', element: el('ServiceDetail') },
+      { path: 'trudova-medicina', page: 'OccupationalHealth', element: el('OccupationalHealth') },
       { path: 'produkti', page: 'Products', element: el('Products') },
       { path: 'produkti/:slug', page: 'ProductDetail', element: el('ProductDetail') },
       { path: 'kontakti', page: 'Contact', element: el('Contact') },
