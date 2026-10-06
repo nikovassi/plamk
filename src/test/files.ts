@@ -1,0 +1,12 @@
+/** Build File objects with real signatures for upload tests. */
+export const SIG = {
+  pdf: [0x25, 0x50, 0x44, 0x46, 0x2d, 0x31],
+  jpg: [0xff, 0xd8, 0xff, 0xe0, 0, 0x10],
+  png: [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a],
+  dwg: [0x41, 0x43, 0x31, 0x30, 0x33, 0x32],
+}
+export function makeFile(name: string, type: string, head: number[], size = 1024) {
+  const bytes = new Uint8Array(size)
+  bytes.set(head.slice(0, size))
+  return new File([bytes], name, { type })
+}
