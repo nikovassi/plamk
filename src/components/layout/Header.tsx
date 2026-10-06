@@ -9,7 +9,6 @@ import { track } from '../../lib/analytics'
 
 export const mainNav = [
   { to: '/uslugi', label: 'Услуги' },
-  { to: '/trudova-medicina', label: 'Трудова медицина' },
   { to: '/produkti', label: 'Продукти' },
   { to: '/proekti', label: 'Проекти' },
   { to: '/kontakti', label: 'Контакти' },
@@ -54,24 +53,34 @@ export function Header() {
                 <NavLink
                   to={n.to}
                   className={({ isActive }) =>
-                    `relative inline-flex h-11 items-center rounded-full px-4 text-[0.9375rem] font-medium transition-colors ${isActive ? 'bg-current/10' : 'hover:bg-current/5'}`
+                    `relative inline-flex h-11 items-center whitespace-nowrap rounded-full px-3 text-[0.9375rem] xl:px-4 font-medium transition-colors ${isActive ? 'bg-current/10' : 'hover:bg-current/5'}`
                   }
                 >
                   {n.label}
                 </NavLink>
               </li>
             ))}
+            <li className="ml-2">
+              <NavLink
+                to="/trudova-medicina"
+                className={({ isActive }) =>
+                  `inline-flex h-10 items-center whitespace-nowrap rounded-full bg-stm px-4 text-[0.9375rem] font-semibold text-stm-ink shadow-[0_8px_24px_-12px_var(--stm)] transition-colors hover:bg-stm-hover ${isActive ? 'ring-2 ring-stm/40 ring-offset-2 ring-offset-transparent' : ''}`
+                }
+              >
+                Трудова медицина
+              </NavLink>
+            </li>
           </ul>
         </nav>
         <div className="flex items-center gap-1">
           <ThemeToggle />
           {tel && (
-            <a href={tel} onClick={() => track('phone_click', { from: 'header' })} className="grid h-11 w-11 place-items-center rounded-full hover:bg-current/10 lg:hidden" aria-label={`Обади се: ${site.contacts.phoneDisplay ?? site.contacts.phone}`}>
+            <a href={tel} onClick={() => track('phone_click', { from: 'header' })} className="grid h-11 w-11 place-items-center rounded-full hover:bg-current/10 xl:hidden" aria-label={`Обади се: ${site.contacts.phoneDisplay ?? site.contacts.phone}`}>
               <Icon name="phone" />
             </a>
           )}
           {tel && (
-            <span className="hidden lg:block">
+            <span className="hidden xl:block">
               <ButtonA href={tel} variant={overlay ? 'outline-inverse' : 'ghost'} size="sm" iconLeft="phone" onClick={() => track('phone_click', { from: 'header' })}>
                 Обади се
               </ButtonA>

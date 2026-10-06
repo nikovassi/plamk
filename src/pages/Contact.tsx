@@ -17,7 +17,7 @@ export default function Contact() {
   const c = site.contacts
   return (
     <>
-      <PageHero eyebrow="Контакти" title="Да поговорим за вашата фасада" intro="Най-бързо: онлайн запитване със снимка. Или се свържете директно." />
+      <PageHero eyebrow="Контакти" title="Свържете се с нас" intro="Обадете се или изпратете запитване — за фасади, метални конструкции, трудова медицина или продукти." />
       <section className="container-x grid gap-4 md:grid-cols-2">
         <Link to="/zapitvane?ot=kontakti" className="group flex flex-col justify-between gap-10 rounded-[28px] bg-accent p-6 text-accent-ink md:p-8">
           <Icon name="send" className="h-8 w-8" />
@@ -39,6 +39,11 @@ export default function Contact() {
       <section className="container-x mt-10 grid gap-8 md:grid-cols-2">
         <div>
           <h2 className="mb-4 text-2xl">Директен контакт</h2>
+          {c.person && (
+            <p className="mb-4 text-lg">
+              <span className="font-semibold">{c.person.name}</span> <span className="text-ink-2">· {c.person.role}</span>
+            </p>
+          )}
           <ContactActions from="contact" />
         </div>
         <div>

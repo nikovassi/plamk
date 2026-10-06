@@ -13,7 +13,7 @@ describe('routing', () => {
     ['/uslugi', /^Услуги$/],
     ['/produkti', /^Продукти$/],
     ['/trudova-medicina', /Служба по трудова медицина/],
-    ['/kontakti', /Да поговорим/],
+    ['/kontakti', /Свържете се с нас/],
     ['/poveritelnost', /Политика за поверителност/],
     ['/nyama-takava', /Тази страница не съществува/],
   ])('%s renders its page', async (path, heading) => {

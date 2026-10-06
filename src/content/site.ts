@@ -19,9 +19,10 @@ export const site = {
 
   contacts: {
     /** E.164 format, e.g. "+359888123456" */
-    /** Not provided yet — contact buttons stay hidden until filled in */
-    phone: null as string | null,
-    phoneDisplay: null as string | null,
+    phone: '+359895675875' as string | null,
+    phoneDisplay: '0895 675 875' as string | null,
+    /** Shown on the contact page next to the phone */
+    person: { name: 'Пламен Кръстираев', role: 'Управител' } as { name: string; role: string } | null,
     email: null as string | null,
     privacyEmail: null as string | null,
     /** Number in international format without "+" for wa.me links */

@@ -11,7 +11,7 @@ export function Logo({ className = '' }: { className?: string }) {
       </svg>
       <span className="flex flex-col leading-none">
         <span className="text-[1.05rem] font-bold tracking-[0.18em]">{site.brand}</span>
-        <span className="mt-0.5 text-[0.625rem] font-medium uppercase tracking-[0.22em] opacity-70">{site.brandTagline}</span>
+        <span className="mt-0.5 whitespace-nowrap text-[0.625rem] font-medium uppercase tracking-[0.22em] opacity-70 lg:max-xl:hidden">{site.brandTagline}</span>
       </span>
     </span>
   )
