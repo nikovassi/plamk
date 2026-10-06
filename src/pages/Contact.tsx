@@ -9,8 +9,8 @@ import { breadcrumbLd, localBusinessLd, useSeo } from '../lib/seo'
 
 export default function Contact() {
   useSeo({
-    title: 'Контакти — запитване за фасада',
-    description: 'Свържете се с нас за оферта за фасадна облицовка: телефон, email или онлайн запитване със снимки и чертежи.',
+    title: 'Контакти — ПЛАМК, гр. Казанлък',
+    description: 'Телефон и онлайн запитване за фасади, метални конструкции, трудова медицина, хартиени продукти и фолиа.',
     path: '/kontakti',
     jsonLd: [localBusinessLd(), breadcrumbLd([{ name: 'Начало', path: '/' }, { name: 'Контакти', path: '/kontakti' }])],
   })
