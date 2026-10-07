@@ -1,7 +1,9 @@
 // Supabase Edge Function: receives a quote request (multipart/form-data) from the static site.
 // Deploy:  supabase functions deploy submit-lead --no-verify-jwt
-// Secrets: supabase secrets set ALLOWED_ORIGINS=https://nikovassi.github.io RESEND_API_KEY=... \
-//            LEAD_NOTIFY_EMAIL=office@example.bg LEAD_FROM_EMAIL="FACADE <noreply@example.bg>"
+// Secrets: supabase secrets set ALLOWED_ORIGINS=https://nikovassi.github.io \
+//            LEAD_NOTIFY_EMAILS='{"recom":"office@recom.bg","plamk":"office@plamk.net"}' \
+//            RESEND_API_KEY=... LEAD_FROM_EMAIL="Запитвания <noreply@…>"   (email is optional)
+// One function serves both sites (РЕКОМ ГРУП and ПЛАМК); each lead stores `site`.
 // SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are injected automatically. Nothing secret lives in the frontend.
 //
 // Keep the enums/limits below in sync with src/lib/lead/schema.ts and src/lib/lead/files.ts.
@@ -30,8 +32,11 @@ const PHONE = z.string().trim().regex(/^\+?[\d\s\-().]{6,20}$/).refine((v) => { 
 const optStr = (max: number) => z.string().trim().max(max).optional().default('')
 const email = z.string().trim().max(160).refine((v) => v === '' || z.email().safeParse(v).success, 'Невалиден email.').optional().default('')
 
+const SITE = z.enum(['recom', 'plamk']).optional().default('recom')
+
 const full = z.object({
   kind: z.literal('full'),
+  site: SITE,
   projectType: z.enum(['residential', 'office', 'retail', 'hotel', 'industrial', 'public', 'other']),
   service: z.enum(['design', 'supply', 'install', 'full', 'consult', 'unsure']),
   materials: z.array(z.enum(['al-bond', 'hpl', 'keramika', 'metal', 'paper', 'film', 'stm', 'combo', 'unsure'])).min(1).max(6),
@@ -50,6 +55,7 @@ const full = z.object({
 })
 const quick = z.object({
   kind: z.literal('quick'),
+  site: SITE,
   name: z.string().trim().min(2).max(80),
   phone: PHONE,
   city: z.string().trim().min(2).max(80),
@@ -73,6 +79,18 @@ function cors(origin: string | null) {
 }
 const json = (body: unknown, status: number, h: Record<string, string>) =>
   new Response(JSON.stringify(body), { status, headers: { ...h, 'Content-Type': 'application/json; charset=utf-8' } })
+
+/** Legacy service_role JWT, or the new secret key (SUPABASE_SECRET_KEYS = {"default": "sb_secret_…"}) */
+function serviceKey(): string {
+  const legacy = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+  if (legacy) return legacy
+  try {
+    const keys = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}') as Record<string, string>
+    return keys.default ?? Object.values(keys)[0] ?? ''
+  } catch {
+    return ''
+  }
+}
 
 const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!)
 const safeName = (n: string) => n.normalize('NFKD').replace(/[^\w.\-]+/g, '_').replace(/_+/g, '_').slice(-80) || 'file'
@@ -142,7 +160,7 @@ Deno.serve(async (req) => {
   }
   if (total > MAX_TOTAL_BYTES) return json({ error: 'Общият размер на файловете е твърде голям.' }, 413, h)
 
-  const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!, { auth: { persistSession: false } })
+  const db = createClient(Deno.env.get('SUPABASE_URL')!, serviceKey(), { auth: { persistSession: false } })
 
   // Basic abuse limit: max 5 requests per phone per hour
   const since = new Date(Date.now() - 3600_000).toISOString()
@@ -157,8 +175,8 @@ Deno.serve(async (req) => {
 
   const row =
     p.kind === 'full'
-      ? { kind: 'full', reference: ref, name: p.name, company: p.company || null, phone: p.phone, email: p.email || null, project_type: p.projectType, service: p.service, materials: p.materials, area: p.area, city: p.city, address: p.address || null, gps: p.gps ?? null, has_project: p.hasProject, message: p.message || null, source: p.source || null, consent_at: new Date().toISOString() }
-      : { kind: 'quick', reference: ref, name: p.name, phone: p.phone, materials: [p.material], city: p.city, message: p.message, source: p.source || null, consent_at: new Date().toISOString() }
+      ? { kind: 'full', site: p.site, reference: ref, name: p.name, company: p.company || null, phone: p.phone, email: p.email || null, project_type: p.projectType, service: p.service, materials: p.materials, area: p.area, city: p.city, address: p.address || null, gps: p.gps ?? null, has_project: p.hasProject, message: p.message || null, source: p.source || null, consent_at: new Date().toISOString() }
+      : { kind: 'quick', site: p.site, reference: ref, name: p.name, phone: p.phone, materials: [p.material], city: p.city, message: p.message, source: p.source || null, consent_at: new Date().toISOString() }
 
   const { data: lead, error: insErr } = await db.from('leads').insert(row).select('id, reference').single()
   if (insErr || !lead) {
@@ -179,14 +197,20 @@ Deno.serve(async (req) => {
   }
 
   // Notifications (failures are logged, never block the customer)
-  const notify = Deno.env.get('LEAD_NOTIFY_EMAIL')
+  let notify: string | undefined
+  try {
+    notify = JSON.parse(Deno.env.get('LEAD_NOTIFY_EMAILS') ?? '{}')[p.site]
+  } catch {
+    notify = undefined
+  }
+  notify ??= Deno.env.get('LEAD_NOTIFY_EMAIL') ?? undefined
   const lines = Object.entries(row)
-    .filter(([k, v]) => v && !['consent_at', 'reference', 'kind'].includes(k))
+    .filter(([k, v]) => v && !['consent_at', 'reference', 'kind', 'site'].includes(k))
     .map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#666">${esc(k)}</td><td>${esc(typeof v === 'string' ? v : JSON.stringify(v))}</td></tr>`)
     .join('')
   const tasks: Promise<unknown>[] = []
   if (notify)
-    tasks.push(sendMail(notify, `Ново запитване ${lead.reference} — ${p.city}`, `<h2>${lead.reference}</h2><table>${lines}</table><p>Файлове: ${stored.map((s) => esc(s.name)).join(', ') || 'няма'}</p>`, p.kind === 'full' && p.email ? p.email : undefined))
+    tasks.push(sendMail(notify, `[${p.site === 'plamk' ? 'ПЛАМК' : 'РЕКОМ ГРУП'}] Ново запитване ${lead.reference} — ${p.city}`, `<h2>${lead.reference}</h2><table>${lines}</table><p>Файлове: ${stored.map((s) => esc(s.name)).join(', ') || 'няма'}</p>`, p.kind === 'full' && p.email ? p.email : undefined))
   if (p.kind === 'full' && p.email)
     tasks.push(sendMail(p.email, `Получихме вашето запитване ${lead.reference}`, `<p>Здравейте, ${esc(p.name)},</p><p>Получихме вашето запитване.</p><p>Номер: <strong>${lead.reference}</strong></p><p>Ще се свържем с вас след преглед на информацията.</p>`))
   await Promise.allSettled(tasks)

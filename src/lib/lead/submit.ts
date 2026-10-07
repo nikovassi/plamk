@@ -1,5 +1,6 @@
 import type { Attachment } from './files'
 import type { LeadInput, QuickLeadInput } from './schema'
+import { site } from '../../content/site'
 
 /**
  * Sends a lead to the configured API endpoint (Supabase Edge Function `submit-lead`).
@@ -45,7 +46,7 @@ export interface SubmitOptions {
 
 export function buildFormData(payload: LeadPayload, files: Attachment[], o: SubmitOptions = {}) {
   const fd = new FormData()
-  fd.append('payload', JSON.stringify({ ...payload, consent: true, source: o.source ?? '' }))
+  fd.append('payload', JSON.stringify({ ...payload, consent: true, site: site.leadSite, source: o.source ?? '' }))
   fd.append('website', o.honeypot ?? '')
   fd.append('elapsedMs', String(o.startedAt ? Date.now() - o.startedAt : 0))
   for (const a of files) fd.append('files', a.file, a.file.name)
@@ -66,7 +67,8 @@ export function submitLead(payload: LeadPayload, files: Attachment[], o: SubmitO
     xhr.timeout = o.timeoutMs ?? 120_000
     if (ANON_KEY) {
       xhr.setRequestHeader('apikey', ANON_KEY)
-      xhr.setRequestHeader('Authorization', `Bearer ${ANON_KEY}`)
+      // Legacy anon keys are JWTs; new publishable keys (sb_publishable_…) must not be sent as a Bearer token
+      if (!ANON_KEY.startsWith('sb_')) xhr.setRequestHeader('Authorization', `Bearer ${ANON_KEY}`)
     }
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) o.onProgress?.(e.loaded / e.total)

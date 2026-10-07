@@ -14,6 +14,17 @@ const KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
 let client: SupabaseClient | null = null
 const sb = () => (client ??= createClient(URL_!, KEY!, { auth: { persistSession: true, storageKey: 'admin-auth' } }))
 
+/** Labels for values used by either site (one dashboard shows leads of both) */
+const ALL_MATERIALS = [
+  ...materialOptions,
+  ...[
+    { value: 'metal', label: 'Метална конструкция' },
+    { value: 'paper', label: 'Хартиени продукти' },
+    { value: 'film', label: 'Фолиа' },
+    { value: 'stm', label: 'Трудова медицина' },
+  ].filter((x) => !materialOptions.some((o) => o.value === x.value)),
+]
+
 const fmtDate = (s: string) => new Date(s).toLocaleString('bg-BG', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
 const statusMeta = (s: LeadStatus) => STATUSES.find((x) => x.value === s)!
 
@@ -96,6 +107,7 @@ function Dashboard({ email }: { email: string }) {
   const [material, setMaterial] = useState('')
   const [city, setCity] = useState('')
   const [ptype, setPtype] = useState('')
+  const [siteF, setSiteF] = useState('')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [openId, setOpenId] = useState<string | null>(null)
@@ -118,6 +130,7 @@ function Dashboard({ email }: { email: string }) {
       (!material || r.materials.includes(material)) &&
       (!city || r.city === city) &&
       (!ptype || r.project_type === ptype) &&
+      (!siteF || r.site === siteF) &&
       (!from || r.created_at >= from) &&
       (!to || r.created_at <= `${to}T23:59:59`) &&
       (!needle || [r.reference, r.name, r.company, r.phone, r.email, r.city, r.message].some((v) => v?.toLowerCase().includes(needle))),
@@ -150,9 +163,14 @@ function Dashboard({ email }: { email: string }) {
         </div>
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
+        <select aria-label="Сайт" className={selectCls} value={siteF} onChange={(e) => setSiteF(e.target.value)}>
+          <option value="">Сайт: всички</option>
+          <option value="recom">РЕКОМ ГРУП</option>
+          <option value="plamk">ПЛАМК</option>
+        </select>
         <select aria-label="Материал" className={selectCls} value={material} onChange={(e) => setMaterial(e.target.value)}>
           <option value="">Материал: всички</option>
-          {materialOptions.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          {ALL_MATERIALS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
         <select aria-label="Град" className={selectCls} value={city} onChange={(e) => setCity(e.target.value)}>
           <option value="">Град: всички</option>
@@ -180,8 +198,8 @@ function Dashboard({ email }: { email: string }) {
                   <td className="text-ink-3 md:p-3"><span className="tnum block font-semibold text-ink">{r.reference}</span>{fmtDate(r.created_at)}</td>
                   <td className="text-right md:p-3 md:text-left"><button type="button" className="font-semibold hover:underline" onClick={() => setOpenId(r.id)}>{r.name}</button>{r.company && <span className="block text-ink-3">{r.company}</span>}</td>
                   <td className="md:p-3"><a href={`tel:${r.phone}`} onClick={(e) => e.stopPropagation()} className="block">{r.phone}</a>{r.email && <a href={`mailto:${r.email}`} onClick={(e) => e.stopPropagation()} className="block truncate text-ink-3">{r.email}</a>}</td>
-                  <td className="text-right md:p-3 md:text-left">{r.materials.map((m) => labelOf(materialOptions, m)).join(', ') || '—'}</td>
-                  <td className="md:p-3">{labelOf(projectTypeOptions, r.project_type ?? undefined)}{r.kind === 'quick' && <span className="ml-2 rounded-full bg-surface-2 px-2 py-0.5 text-xs">бързо</span>}</td>
+                  <td className="text-right md:p-3 md:text-left">{r.materials.map((m) => labelOf(ALL_MATERIALS, m)).join(', ') || '—'}</td>
+                  <td className="md:p-3">{labelOf(projectTypeOptions, r.project_type ?? undefined)}{r.kind === 'quick' && <span className="ml-2 rounded-full bg-surface-2 px-2 py-0.5 text-xs">бързо</span>}<span className="ml-2 rounded-full bg-surface-2 px-2 py-0.5 text-xs">{r.site === 'plamk' ? 'ПЛАМК' : 'РЕКОМ'}</span></td>
                   <td className="text-right md:p-3 md:text-left">{r.city}</td>
                   <td className="col-span-2 md:p-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${statusMeta(r.status).tone}`}>{statusMeta(r.status).label}</span></td>
                 </tr>
@@ -225,10 +243,11 @@ function LeadDetail({ lead, onClose, onStatus }: { lead: LeadRow; onClose: () =>
     ['Email', lead.email ? <a className="text-accent" href={`mailto:${lead.email}`}>{lead.email}</a> : '—'],
     ['Тип обект', labelOf(projectTypeOptions, lead.project_type ?? undefined)],
     ['Услуга', labelOf(serviceOptions, lead.service ?? undefined)],
-    ['Материал', lead.materials.map((m) => labelOf(materialOptions, m)).join(', ') || '—'],
+    ['Материал', lead.materials.map((m) => labelOf(ALL_MATERIALS, m)).join(', ') || '—'],
     ['Площ', labelOf(areaOptions, lead.area ?? undefined)],
     ['Готов проект', labelOf(hasProjectOptions, lead.has_project ?? undefined)],
     ['Локация', <>{lead.city}{lead.address ? `, ${lead.address}` : ''}{lead.gps && <> · <a className="text-accent" target="_blank" rel="noopener noreferrer" href={`https://www.google.com/maps?q=${lead.gps.lat},${lead.gps.lng}`}>карта</a></>}</>],
+    ['Сайт', lead.site === 'plamk' ? 'ПЛАМК' : 'РЕКОМ ГРУП'],
     ['Източник', lead.source || '—'],
     ['Дата', fmtDate(lead.created_at)],
   ]

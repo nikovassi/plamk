@@ -14,3 +14,4 @@ supabase/.temp
 dist-e2e
 dist-ssr-e2e
 content-images
+!.env.production

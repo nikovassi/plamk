@@ -20,6 +20,7 @@ export interface LeadRow {
   reference: string
   created_at: string
   kind: 'full' | 'quick'
+  site: 'recom' | 'plamk'
   status: LeadStatus
   name: string
   company: string | null

@@ -25,6 +25,8 @@ create table public.leads (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   kind text not null check (kind in ('full', 'quick')),
+  -- which website the request came from (one project serves both sites)
+  site text not null default 'recom' check (site in ('recom', 'plamk')),
   status public.lead_status not null default 'new',
   name text not null check (char_length(name) between 2 and 80),
   company text check (char_length(company) <= 120),
@@ -47,6 +49,7 @@ create table public.leads (
 
 create index leads_created_at_idx on public.leads (created_at desc);
 create index leads_status_idx on public.leads (status);
+create index leads_site_idx on public.leads (site);
 
 create table public.lead_files (
   id uuid primary key default gen_random_uuid(),

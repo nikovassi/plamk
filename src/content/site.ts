@@ -8,6 +8,8 @@ import type { Certificate, ImageAsset, TrustFact, VideoAsset } from './types'
 export const site = {
   /** Source: Търговски регистър (ЕИК 206743735) */
   brand: 'ПЛАМК',
+  /** Key stored with every lead (one Supabase project serves both sites) */
+  leadSite: 'plamk' as 'recom' | 'plamk',
   brandTagline: 'фасади · хартия · фолиа',
   legalName: 'ПЛАМК ЕООД' as string | null,
   /** ЕИК */
