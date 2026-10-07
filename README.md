@@ -105,6 +105,17 @@ tests/e2e/        ← Playwright сценарии
 
 **Документи за проектанти** — файловете в `public/downloads/`, записите в `src/content/documents.ts` (`href`).
 
+## Backend — текущо състояние
+
+- Supabase проект **plamk-recom** (Frankfurt), общ за сайтовете на РЕКОМ ГРУП и ПЛАМК; всяко запитване пази `site`.
+- Функция `submit-lead` е deploy-ната (JWT проверката е изключена; заявки се приемат само от
+  `https://nikovassi.github.io`, `https://www.recom.bg`, `https://recom.bg` — secret `ALLOWED_ORIGINS`).
+- Администратор: office@plamk.net (`/admin` на всеки от двата сайта показва запитванията и от двата).
+- Публичната конфигурация е в `.env.production` (без тайни).
+- Имейл известия: още не са включени — нужни са `RESEND_API_KEY` и `LEAD_FROM_EMAIL` като secrets;
+  получателите вече са зададени в `LEAD_NOTIFY_EMAILS`.
+- При промяна на функцията: Supabase → Edge Functions → submit-lead → Code (или `supabase functions deploy`).
+
 ## Backend (запитвания, файлове, admin)
 
 GitHub Pages е само статичен хостинг — **не съхраняваме заявки в repository-то и не симулираме backend**. Без
