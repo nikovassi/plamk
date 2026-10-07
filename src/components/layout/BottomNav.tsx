@@ -3,11 +3,11 @@ import { Icon, type IconName } from '../ui/Icon'
 import { track } from '../../lib/analytics'
 import { quoteHref } from './Header'
 
-const items: { to: string; label: string; icon: IconName; end?: boolean }[] = [
+const items: { to: string; label: string; icon: IconName; end?: boolean; /** occupational health uses its own colour */ highlight?: boolean }[] = [
   { to: '/', label: 'Начало', icon: 'home', end: true },
   { to: '/uslugi', label: 'Услуги', icon: 'layers' },
   { to: '/produkti', label: 'Продукти', icon: 'grid' },
-  { to: '/kontakti', label: 'Контакти', icon: 'phone' },
+  { to: '/trudova-medicina', label: 'Трудова медицина', icon: 'shield', highlight: true },
 ]
 
 /** App-style bottom navigation (phones & tablets). Hidden while the quote form is open. */
@@ -24,13 +24,15 @@ export function BottomNav() {
                 to={it.to}
                 end={it.end}
                 className={({ isActive }) =>
-                  `flex h-14 flex-col items-center justify-center gap-0.5 rounded-2xl text-[0.75rem] font-medium transition-colors ${isActive ? 'text-ink' : 'text-ink-3'}`
+                  `flex h-14 flex-col items-center justify-center gap-0.5 rounded-2xl text-[0.75rem] font-medium transition-colors ${
+                    it.highlight ? `text-stm ${isActive ? 'bg-stm/10' : ''}` : isActive ? 'text-ink' : 'text-ink-3'
+                  }`
                 }
               >
                 {({ isActive }) => (
                   <>
                     <Icon name={it.icon} className="h-[22px] w-[22px]" strokeWidth={isActive ? 2.1 : 1.6} />
-                    <span>{it.label}</span>
+                    <span className={it.highlight ? 'text-center text-[0.6875rem] leading-[1.05]' : ''}>{it.label}</span>
                   </>
                 )}
               </NavLink>

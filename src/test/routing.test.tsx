@@ -43,7 +43,7 @@ describe('mobile navigation and CTA', () => {
   it('bottom navigation has all sections and a prominent quote action', async () => {
     renderAt('/')
     const nav = await screen.findByTestId('bottom-nav')
-    for (const label of ['Начало', 'Услуги', 'Продукти', 'Контакти', 'Запитване']) expect(within(nav).getByRole('link', { name: new RegExp(label) })).toBeInTheDocument()
+    for (const label of ['Начало', 'Услуги', 'Продукти', 'Трудова медицина', 'Запитване']) expect(within(nav).getByRole('link', { name: new RegExp(label) })).toBeInTheDocument()
     expect(within(nav).getByRole('link', { name: /Запитване/ })).toHaveAttribute('href', '/zapitvane')
   })
 

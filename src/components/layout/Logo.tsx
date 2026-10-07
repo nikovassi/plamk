@@ -1,18 +1,16 @@
 import { site } from '../../content/site'
+import { PLAMK_PATH, PLAMK_VIEWBOX } from './logoPaths'
 
-/** Working wordmark — replace with the company logo (keep it an inline SVG for crisp rendering). */
-export function Logo({ className = '' }: { className?: string }) {
+/** PLAMK wordmark. Uses currentColor, so it is dark in light mode, light in dark mode and white over photos. */
+export function Logo({ className = '', tagline = true }: { className?: string; tagline?: boolean }) {
   return (
-    <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      <svg viewBox="0 0 32 32" className="h-8 w-8 shrink-0" aria-hidden="true">
-        <rect x="1" y="1" width="30" height="30" rx="7" fill="currentColor" />
-        <path d="M8 8h7v7H8zM17 8h7v4h-7zM17 14h7v10h-7zM8 17h7v7H8z" fill="var(--bg)" />
-        <path d="M17 14h7v3h-7z" fill="var(--accent)" />
+    <span className={`inline-flex flex-col items-start leading-none ${className}`}>
+      <svg viewBox={PLAMK_VIEWBOX} className="h-[22px] w-auto lg:h-6" role="img" aria-label={site.brand} focusable="false">
+        <path fill="currentColor" fillRule="evenodd" d={PLAMK_PATH} />
       </svg>
-      <span className="flex flex-col leading-none">
-        <span className="text-[1.05rem] font-bold tracking-[0.18em]">{site.brand}</span>
-        <span className="mt-0.5 whitespace-nowrap text-[0.625rem] font-medium uppercase tracking-[0.22em] opacity-70 lg:max-xl:hidden">{site.brandTagline}</span>
-      </span>
+      {tagline && (
+        <span className="mt-1.5 whitespace-nowrap text-[0.625rem] font-medium uppercase tracking-[0.22em] opacity-70 lg:max-xl:hidden">{site.brandTagline}</span>
+      )}
     </span>
   )
 }
